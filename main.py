@@ -137,3 +137,7 @@ def get_sample_cases(mode: str = Query("developer-friendly", enum=["developer-fr
 @app.get("/")
 def read_root():
     return {"message": "Welcome to the BugFinder API! Use /find-bug to POST code for analysis."}
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run("main:app", host="0.0.0.0", port=8000)
+
