@@ -27,6 +27,8 @@ load_dotenv()
 
 # Initialize app and limiter
 app = FastAPI()
+print("DEBUG: FastAPI app initialized")
+
 limiter = Limiter(key_func=get_remote_address)
 app.state.limiter = limiter
 app.add_middleware(SlowAPIMiddleware)
@@ -169,14 +171,15 @@ def read_root():
 
 
 
+print("DEBUG: FastAPI app initialized")
 
-if __name__ == "__main__":
-    import uvicorn
-    import os
-    port = int(os.environ.get("PORT", 8000))  
-    uvicorn.run("main:app", host="0.0.0.0", port=port)
-    print("DEBUG: MOCK_MODE =", MOCK_MODE)
-    print("DEBUG: PORT =", os.getenv("PORT"))
+# if __name__ == "__main__":
+#     import uvicorn
+#     import os
+#     port = int(os.environ.get("PORT", 8000))  
+#     uvicorn.run("main:app", host="0.0.0.0", port=port)
+#     print("DEBUG: MOCK_MODE =", MOCK_MODE)
+#     print("DEBUG: PORT =", os.getenv("PORT"))
 
     
 # if __name__ == "__main__":
