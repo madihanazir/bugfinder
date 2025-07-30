@@ -10,7 +10,7 @@ MOCK_MODE=true
 PORT=8080
 ```
 
-> **Note:** If you're just testing the API behavior, keep `MOCK_MODE=true` (no API key needed).
+> **Note:** If you're just testing the API behavior, keep `MOCK_MODE=true` (no API key needed). Due to 429 error (rate limiting), Gemini API billing could not be used during testing. Hence, the deployed version does not work with the real LLM unless quota is increased.
 
 ---
 
