@@ -20,6 +20,8 @@ import uvicorn
 from bdetect import get_bug_report
 from model import CodeSnippet, BugReport
 
+
+
 # Load environment variables
 load_dotenv()
 
@@ -31,49 +33,26 @@ app.add_middleware(SlowAPIMiddleware)
 
 # Setup Gemini
 API_KEY = os.getenv("GEMINI_API_KEY")
-MOCK_MODE = os.getenv("MOCK_MODE") == "true"
+# MOCK_MODE = os.getenv("MOCK_MODE") == "true"
+MOCK_MODE = os.getenv("MOCK_MODE", "true").lower() == "true"
+
 
 if API_KEY:
     genai.configure(api_key=API_KEY)
 
-# Rate-limit handler
-@app.exception_handler(RateLimitExceeded)
-async def rate_limit_handler(request: Request, exc: RateLimitExceeded):
-    return JSONResponse(
-        status_code=429,
-        content={"detail": "Too many requests. Please slow down."},
-    )
+class CodeSnippet(BaseModel):
+    language: str
+    code: str
 
+class BugReport(BaseModel):
+    language: str
+    bug_type: str
+    description: str
+    suggestion: str
 
-
-
-# Actual /find-bug route
-@limiter.limit("10/minute")
-@app.post("/find-bug", response_model=BugReport)
-
-def find_bug(request: Request, snippet: CodeSnippet, mode: str= Query("developer-friendly", enum=["developer-friendly", "casual"])):
-    if not snippet.code.strip():
-        raise HTTPException(status_code=400, detail="Code is empty.")
-
-    if snippet.language.lower() != "python":
-        raise HTTPException(status_code=400, detail="Only Python is supported right now.")
-
-    if snippet.code.count("\n") > 30:
-        raise HTTPException(status_code=400, detail="Code exceeds 30 lines.")
-
-    try:
-        if MOCK_MODE:
-            return BugReport(
-                language=snippet.language,
-                bug_type="Mocked Bug",
-                description="This is a mocked bug description.",
-                suggestion="This is a mocked suggestion."
-            )
-        else:
-            result = get_bug_report(snippet.language, snippet.code, mode)
-            return BugReport(language=snippet.language, **result)
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+@app.get("/healthz")
+def healthz():
+    return {"status": "ok"}
 
 @app.get("/sample-cases", response_model=List[BugReport])
 def get_sample_cases(mode: str = Query("developer-friendly", enum=["developer-friendly", "casual"])):
@@ -135,13 +114,54 @@ def get_sample_cases(mode: str = Query("developer-friendly", enum=["developer-fr
             "suggestion": "Use `if arr:` instead, or review logic."
         },
     ]
+
+
+# Rate-limit handler
+@app.exception_handler(RateLimitExceeded)
+async def rate_limit_handler(request: Request, exc: RateLimitExceeded):
+    return JSONResponse(
+        status_code=429,
+        content={"detail": "Too many requests. Please slow down."},
+    )
+
+
+
+
+# Actual /find-bug route
+@limiter.limit("10/minute")
+@app.post("/find-bug", response_model=BugReport)
+
+def find_bug(request: Request, snippet: CodeSnippet, mode: str= Query("developer-friendly", enum=["developer-friendly", "casual"])):
+    print("DEBUG: Received request with snippet:", snippet)
+    if not snippet.code.strip():
+        raise HTTPException(status_code=400, detail="Code is empty.")
+
+    if snippet.language.lower() != "python":
+        raise HTTPException(status_code=400, detail="Only Python is supported right now.")
+
+    if snippet.code.count("\n") > 30:
+        raise HTTPException(status_code=400, detail="Code exceeds 30 lines.")
+
+    try:
+        if MOCK_MODE:
+            return BugReport(
+                language=snippet.language,
+                bug_type="Mocked Bug",
+                description="This is a mocked bug description.",
+                suggestion="This is a mocked suggestion."
+            )
+        else:
+            result = get_bug_report(snippet.language, snippet.code, mode)
+            return BugReport(language=snippet.language, **result)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 @app.get("/")
 def read_root():
     return {"message": "Welcome to the BugFinder API! Use /find-bug to POST code for analysis."}
 
-@app.get("/healthz")
-def healthz():
-    return {"status": "ok"}
+
 
 
 if __name__ == "__main__":
