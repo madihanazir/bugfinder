@@ -25,7 +25,7 @@ python main.py
 Or with Uvicorn (preferred):
 
 ```bash
-uvicorn main:app --reload --port 8080
+python -m uvicorn main:app --reload
 ```
 
 ---
@@ -184,7 +184,7 @@ A ready-to-run zip file is available under the [🔗 Releases](https://github.co
 6. **Start the API server**:
 
    ```bash
-   uvicorn main:app --reload --port 8080
+   python -m uvicorn main:app --reload or python main.py
    ```
 
 7. **Access locally at**:
@@ -192,3 +192,4 @@ A ready-to-run zip file is available under the [🔗 Releases](https://github.co
    * [http://localhost:8080/ping](http://localhost:8080/ping) → Pong
    * [http://localhost:8080/healthz](http://localhost:8080/healthz) → OK
    * [POST http://localhost:8080/find-bug](http://localhost:8080/find-bug) → Bug detection
+Note: Due to 429 error (rate limiting), Gemini API billing could not be used during testing. Hence, the deployed version does not work with the real LLM unless quota is increased.
