@@ -193,3 +193,6 @@ A ready-to-run zip file is available under the [🔗 Releases](https://github.co
    * [http://localhost:8080/healthz](http://localhost:8080/healthz) → OK
    * [POST http://localhost:8080/find-bug](http://localhost:8080/find-bug) → Bug detection
 Note: Due to 429 error (rate limiting), Gemini API billing could not be used during testing. Hence, the deployed version does not work with the real LLM unless quota is increased.
+
+<img width="1012" height="843" alt="Image" src="https://github.com/user-attachments/assets/ae10acd7-35ab-4f80-91e0-2955d13e6c11" />
+<img width="637" height="250" alt="Image" src="https://github.com/user-attachments/assets/0a3bd2b0-22f1-445a-b3c7-26ecb10f3834" />
