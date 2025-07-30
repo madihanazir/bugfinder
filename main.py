@@ -15,6 +15,7 @@ from slowapi.errors import RateLimitExceeded
 #from slowapi.decorator import limiter as limit_decorator
 from slowapi.extension import Limiter as SlowAPILimiter
 from fastapi.responses import JSONResponse
+import uvicorn
 
 from bdetect import get_bug_report
 from model import CodeSnippet, BugReport
@@ -139,14 +140,19 @@ def read_root():
     return {"message": "Welcome to the BugFinder API! Use /find-bug to POST code for analysis."}
 
 @app.get("/healthz")
-async def health_check():
-    print("Healthcheck hit!")
+def healthz():
     return {"status": "ok"}
 
 
+if __name__ == "__main__":
+    import uvicorn
+    import os
+    port = int(os.environ.get("PORT", 8000))  
+    uvicorn.run("main:app", host="0.0.0.0", port=port)
+    
 # if __name__ == "__main__":
 #     import uvicorn
 #     import os
-#     port = int(os.environ.get("PORT", 8000))  # default to 8000 if running locally
+#     port = int(os.environ.get("PORT", 8000))  
 #     uvicorn.run("main:app", host="0.0.0.0", port=port)
 
