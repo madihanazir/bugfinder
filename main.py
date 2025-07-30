@@ -139,7 +139,8 @@ def read_root():
     return {"message": "Welcome to the BugFinder API! Use /find-bug to POST code for analysis."}
 
 @app.get("/healthz")
-def health_check():
+async def health_check():
+    print("Healthcheck hit!")
     return {"status": "ok"}
 
 
