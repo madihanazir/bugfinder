@@ -186,6 +186,6 @@ if __name__ == "__main__":
 #     uvicorn.run("main:app", host="0.0.0.0", port=port)
 @app.get("/ping")
 def ping():
-    return {"message": "pong", "mock_mode": MOCK_MODE}
+    return {"message": "pong"}
 
 
