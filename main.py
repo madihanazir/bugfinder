@@ -133,6 +133,9 @@ async def rate_limit_handler(request: Request, exc: RateLimitExceeded):
 
 def find_bug(request: Request, snippet: CodeSnippet, mode: str= Query("developer-friendly", enum=["developer-friendly", "casual"])):
     print("DEBUG: Received request with snippet:", snippet)
+    print("DEBUG: Mode =", mode)
+    print("DEBUG: Snippet =", snippet)
+
     if not snippet.code.strip():
         raise HTTPException(status_code=400, detail="Code is empty.")
 
@@ -152,8 +155,10 @@ def find_bug(request: Request, snippet: CodeSnippet, mode: str= Query("developer
             )
         else:
             result = get_bug_report(snippet.language, snippet.code, mode)
+            print("DEBUG: Bug report result =", result)
             return BugReport(language=snippet.language, **result)
     except Exception as e:
+        print("ERROR in get_bug_report:", str(e))
         raise HTTPException(status_code=500, detail=str(e))
 
 
@@ -169,10 +174,17 @@ if __name__ == "__main__":
     import os
     port = int(os.environ.get("PORT", 8000))  
     uvicorn.run("main:app", host="0.0.0.0", port=port)
+    print("DEBUG: MOCK_MODE =", MOCK_MODE)
+    print("DEBUG: PORT =", os.getenv("PORT"))
+
     
 # if __name__ == "__main__":
 #     import uvicorn
 #     import os
 #     port = int(os.environ.get("PORT", 8000))  
 #     uvicorn.run("main:app", host="0.0.0.0", port=port)
+@app.get("/ping")
+def ping():
+    return {"message": "pong", "mock_mode": MOCK_MODE}
+
 
