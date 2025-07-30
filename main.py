@@ -158,8 +158,9 @@ def find_bug(request: Request, snippet: CodeSnippet, mode: str= Query("developer
             print("DEBUG: Bug report result =", result)
             return BugReport(language=snippet.language, **result)
     except Exception as e:
-        print("ERROR in get_bug_report:", str(e))
-        raise HTTPException(status_code=500, detail=str(e))
+        import traceback
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail=f"Internal Error: {str(e)}")
 
 
 @app.get("/")
